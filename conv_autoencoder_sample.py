@@ -33,24 +33,36 @@ x_train = np.reshape(x_train, (len(x_train), 28, 28, 1))
 x_test = np.reshape(x_test, (len(x_test), 28, 28, 1))
 
 model.fit(x_train, x_train,
-                nb_epoch=50,
+                #nb_epoch=50,
+                nb_epoch=1,
                 batch_size=128,
                 shuffle=True,
                 validation_data=(x_test, x_test))
                 #callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
 
 import matplotlib.pyplot as plt
+#matplotlib.use('TKAgg')
 
 n = 10
 #encoder = Model(input_img, encoded)
 decoded_imgs = model.predict(x_test[:n])
 
-plt.figure(figsize=(20, 8))
+# plt.figure(figsize=(20, 1))
+# for i in range(n):
+#     for j in range(1):
+#         ax = plt.subplot(1, n, j*n + i+1)
+#         plt.imshow(decoded_imgs[i][j], interpolation='none')
+#         plt.gray()
+#         ax.get_xaxis().set_visible(False)
+#         ax.get_yaxis().set_visible(False)
+# plt.show()
+
+plt.figure(figsize=(20, 4))
 for i in range(n):
-    for j in range(8):
-        ax = plt.subplot(8, n, j*n + i+1)
-        plt.imshow(decoded_imgs[i][j], interpolation='none')
-        plt.gray()
-        ax.get_xaxis().set_visible(False)
-        ax.get_yaxis().set_visible(False)
+    # display reconstruction
+    ax = plt.subplot(1, n, i+1)
+    plt.imshow(decoded_imgs[i].reshape(28, 28))
+    plt.gray()
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
 plt.show()
