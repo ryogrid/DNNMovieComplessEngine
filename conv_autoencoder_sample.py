@@ -1,3 +1,4 @@
+# Python 2.7.10
 # tensorflow (1.4.1)
 # Keras (2.1.3)
 
