@@ -1,8 +1,10 @@
-from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D
+# tensorflow (1.4.1)
+# Keras (2.1.3)
+
+from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, concatenate
 from keras.models import Model, Sequential
 
 model = Sequential()
-#input_img = Input(shape=(1, 28, 28))
 
 model.add(Conv2D(16, (3, 3), activation='relu', padding='same', input_shape=(28,28,1)))
 model.add(MaxPooling2D((2, 2), padding='same'))
@@ -39,29 +41,35 @@ model.fit(x_train, x_train,
                 shuffle=True,
                 validation_data=(x_test, x_test))
                 #callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
-
+                                  
 import matplotlib.pyplot as plt
 #matplotlib.use('TKAgg')
 
 n = 10
-#encoder = Model(input_img, encoded)
-decoded_imgs = model.predict(x_test[:n])
 
-# plt.figure(figsize=(20, 1))
+# decoded_imgs = model.predict(x_test[:n])
+# plt.figure(figsize=(20, 4))
 # for i in range(n):
-#     for j in range(1):
-#         ax = plt.subplot(1, n, j*n + i+1)
-#         plt.imshow(decoded_imgs[i][j], interpolation='none')
-#         plt.gray()
-#         ax.get_xaxis().set_visible(False)
-#         ax.get_yaxis().set_visible(False)
+#     # display reconstruction
+#     ax = plt.subplot(1, n, i+1)
+#     plt.imshow(decoded_imgs[i].reshape(28, 28))
+#     plt.gray()
+#     ax.get_xaxis().set_visible(False)
+#     ax.get_yaxis().set_visible(False)
 # plt.show()
 
+from keras import backend as K
+
+encode_output = K.function([model.layers[0].input],
+                           [model.layers[5].output])
+encoded_imgs = encode_output([x_test[:n]])
+encoded_imgs = encoded_imgs[0].reshape(n, 4, 4*8)
+#print(encoded_imgs.shape)
 plt.figure(figsize=(20, 4))
 for i in range(n):
     # display reconstruction
     ax = plt.subplot(1, n, i+1)
-    plt.imshow(decoded_imgs[i].reshape(28, 28))
+    plt.imshow(encoded_imgs[i].T)
     plt.gray()
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
