@@ -37,7 +37,7 @@ x_test = np.reshape(x_test, (len(x_test), 28, 28, 1))
 
 model.fit(x_train, x_train,
                 #nb_epoch=50,
-                nb_epoch=1,
+                nb_epoch=5,
                 batch_size=128,
                 shuffle=True,
                 validation_data=(x_test, x_test))
@@ -61,10 +61,10 @@ n = 10
 
 from keras import backend as K
 
-encode_output = K.function([model.layers[0].input],
+encode_model = K.function([model.layers[0].input],
                            [model.layers[5].output])
-encoded_imgs = encode_output([x_test[:n]])
-encoded_imgs = encoded_imgs[0].reshape(n, 4, 4*8)
+encoded_imgs_tmp = encode_model([x_test[:n]])
+encoded_imgs = encoded_imgs_tmp[0].reshape(n, 4, 4*8)
 #print(encoded_imgs.shape)
 plt.figure(figsize=(20, 4))
 for i in range(n):
@@ -75,3 +75,19 @@ for i in range(n):
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
 plt.show()
+
+decode_model = K.function([model.layers[6].input],
+                           [model.layers[12].output])
+decoded_imgs = decode_model(encoded_imgs_tmp)
+decoded_imgs = decoded_imgs[0].reshape(n, 28, 28)
+#print(encoded_imgs.shape)
+plt.figure(figsize=(20, 4))
+for i in range(n):
+    # display reconstruction
+    ax = plt.subplot(1, n, i+1)
+    plt.imshow(decoded_imgs[i].T)
+    plt.gray()
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+plt.show()
+
